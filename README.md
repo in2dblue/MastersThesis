@@ -1,3 +1,6 @@
+# MastersThesis
+Masters thesis on complex word identification (CWI) for language learners
+
 # Complex Word Identification
 
 This github contains the state-of-the-art complex word identification model *SEQ* from [Gooding and Kochmar (2019)](https://www.aclweb.org/anthology/P19-1109). 
@@ -9,9 +12,6 @@ The dataset used to train these models was collected by Yimam et al., (2018) and
 # System Output
 
 The system output for both *SEQ* and the winning shared task submission *CAMB* is available in [Sytem Output](./System%20Output).
-
-# MastersThesis
-Masters thesis on complex word identification (CWI) for language learners
 
 ## Requirements
 python (tested with 3.6)
