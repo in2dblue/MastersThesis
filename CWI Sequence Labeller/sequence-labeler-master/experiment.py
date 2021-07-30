@@ -14,6 +14,7 @@ except:
 
 from labeler import SequenceLabeler
 from evaluator import SequenceLabelingEvaluator
+from feature_extractor import ExtractFeatures
 
 def read_input_files(file_paths, max_sentence_length=-1):
     """
@@ -33,7 +34,9 @@ def read_input_files(file_paths, max_sentence_length=-1):
                     assert(len(line_parts) >= 2)
                     assert(len(line_parts) == line_length or line_length == None)
                     line_length = len(line_parts)
-                    sentence.append(line_parts)
+                    word, label = line_parts
+                    word_length, word_syn, word_hyper, word_hypo, word_syl = word_features(word)
+                    sentence.append([word, word_length, word_syn, word_hyper, word_hypo, word_syl, label])
                 elif len(line) == 0 and len(sentence) > 0:
                     if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
                         sentences.append(sentence)
@@ -44,6 +47,22 @@ def read_input_files(file_paths, max_sentence_length=-1):
     return sentences
 
 
+def word_features(word):
+    feature_extractor = ExtractFeatures()
+
+    # word_length = feature_extractor.word_length(word)
+    # word_syn = feature_extractor.synonyms(word)
+    # word_hyper = feature_extractor.hypernyms(word)
+    # word_hypo = feature_extractor.hyponyms(word)
+    # word_syl = feature_extractor.get_syllables(word)
+
+    word_length = 0
+    word_syn = 0
+    word_hyper = 0
+    word_hypo = 0
+    word_syl = 0
+
+    return word_length, word_syn, word_hyper, word_hypo, word_syl
 
 def parse_config(config_section, config_path):
     """

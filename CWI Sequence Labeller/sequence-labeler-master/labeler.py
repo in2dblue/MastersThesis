@@ -81,7 +81,7 @@ class SequenceLabeler(object):
                     self.embedding_vocab.add(w)
             word2id_revised = collections.OrderedDict()
             for word in self.word2id:
-                if word in embedding_vocab and word not in word2id_revised:
+                if word in self.embedding_vocab and word not in word2id_revised:
                     word2id_revised[word] = len(word2id_revised)
             self.word2id = word2id_revised
 
@@ -99,6 +99,11 @@ class SequenceLabeler(object):
         self.label_ids = tf.placeholder(tf.int32, [None, None], name="label_ids")
         self.learningrate = tf.placeholder(tf.float32, name="learningrate")
         self.is_training = tf.placeholder(tf.int32, name="is_training")
+        self.length_of_the_word = tf.placeholder(tf.float32, [None, None, 1], name="length_of_the_word")
+        self.word_syn = tf.placeholder(tf.float32, [None, None, 1], name="word_syn")
+        self.word_hyper = tf.placeholder(tf.float32, [None, None, 1], name="word_hyper")
+        self.word_hypo = tf.placeholder(tf.float32, [None, None, 1], name="word_hypo")
+        self.word_syl = tf.placeholder(tf.float32, [None, None, 1], name="word_syl")
 
         self.loss = 0.0
         input_tensor = None
@@ -210,6 +215,14 @@ class SequenceLabeler(object):
 
         processed_tensor = tf.concat([lstm_outputs_fw, lstm_outputs_bw], 2)
         processed_tensor_size = self.config["word_recurrent_size"] * 2
+
+        ## OUR CODE TO ADD FEATURES
+        # processed_tensor = tf.concat([processed_tensor, self.length_of_the_word], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.word_syn], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.word_hyper], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.word_hypo], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.word_syl], -1)
+        ##
 
         if self.config["hidden_layer_size"] > 0:
             processed_tensor = tf.layers.dense(processed_tensor, self.config["hidden_layer_size"], activation=tf.tanh, kernel_initializer=self.initializer)
@@ -333,6 +346,11 @@ class SequenceLabeler(object):
         char_ids = numpy.zeros((len(batch), max_sentence_length, max_word_length), dtype=numpy.int32)
         word_lengths = numpy.zeros((len(batch), max_sentence_length), dtype=numpy.int32)
         label_ids = numpy.zeros((len(batch), max_sentence_length), dtype=numpy.int32)
+        length_of_the_word = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
+        word_syn = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
+        word_hyper = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
+        word_hypo = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
+        word_syl = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
 
         singletons = self.singletons if is_training == True else None
         singletons_prob = self.config["singletons_prob"] if is_training == True else 0.0
@@ -341,10 +359,18 @@ class SequenceLabeler(object):
                 word_ids[i][j] = self.translate2id(batch[i][j][0], self.word2id, self.UNK, lowercase=self.config["lowercase"], replace_digits=self.config["replace_digits"], singletons=singletons, singletons_prob=singletons_prob)
                 label_ids[i][j] = self.translate2id(batch[i][j][-1], self.label2id, None)
                 word_lengths[i][j] = min(len(batch[i][j][0]), max_word_length)
+                length_of_the_word[i][j][0] = float(batch[i][j][1])
+                word_syn[i][j][0] = float(batch[i][j][2])
+                word_hyper[i][j][0] = float(batch[i][j][3])
+                word_hypo[i][j][0] = float(batch[i][j][4])
+                word_syl[i][j][0] = float(batch[i][j][5])
                 for k in range(min(len(batch[i][j][0]), max_word_length)):
                     char_ids[i][j][k] = self.translate2id(batch[i][j][0][k], self.char2id, self.CUNK)
 
-        input_dictionary = {self.word_ids: word_ids, self.char_ids: char_ids, self.sentence_lengths: sentence_lengths, self.word_lengths: word_lengths, self.label_ids: label_ids, self.learningrate: learningrate, self.is_training: is_training}
+        input_dictionary = {self.word_ids: word_ids, self.char_ids: char_ids, self.sentence_lengths: sentence_lengths,
+                            self.word_lengths: word_lengths, self.label_ids: label_ids, self.learningrate: learningrate, self.is_training: is_training,
+                            self.length_of_the_word: length_of_the_word, self.word_syn: word_syn, self.word_hyper: word_hyper, self.word_hypo: word_hypo,
+                            self.word_syl: word_syl}
         return input_dictionary
 
 
