@@ -3,8 +3,8 @@ import csv
 
 from nltk import word_tokenize
 
-file_read_path = './data/Wikipedia_Test.tsv'
-file_write_path = './data/Wikipedia_Test_final.tsv'
+file_read_path = './data/Wikipedia_Dev.tsv'
+file_write_path = './data/Wikipedia_Dev_final2.tsv'
 
 data_frame = pd.read_table(file_read_path, names=('ID', 'sentence', 'start_index', 'end_index', 'phrase', 'total_native', 'total_non_native','native_complex','non_native_complex','complex_binary','complex_probabilistic'))
 
@@ -32,7 +32,8 @@ with open(file_write_path, 'wt') as out_file:
                     elif word[-1] == ',':
                         word = word[:-1]
                         label = 'C' if word in complex_words else 'N'
-                        tsv_writer.writerow([word, label])
+                        if word.strip() != '':
+                            tsv_writer.writerow([word, label])
                         tsv_writer.writerow([',', 'N'])
                     elif word[-1] == '"':
                         word = word[:-1]
@@ -74,7 +75,8 @@ with open(file_write_path, 'wt') as out_file:
         elif word[-1] == ',':
             word = word[:-1]
             label = 'C' if word in complex_words else 'N'
-            tsv_writer.writerow([word, label])
+            if word.strip() != '':
+                tsv_writer.writerow([word, label])
             tsv_writer.writerow([',', 'N'])
         elif word[-1] == '"':
             word = word[:-1]
