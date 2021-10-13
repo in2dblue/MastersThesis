@@ -4,7 +4,7 @@ import csv
 from nltk import word_tokenize
 
 file_read_path = './data/Wikipedia_Dev.tsv'
-file_write_path = './data/Wikipedia_Dev_final2.tsv'
+file_write_path = './data/Wikipedia_Dev_final_token.tsv'
 
 data_frame = pd.read_table(file_read_path, names=('ID', 'sentence', 'start_index', 'end_index', 'phrase', 'total_native', 'total_non_native','native_complex','non_native_complex','complex_binary','complex_probabilistic'))
 
@@ -60,8 +60,8 @@ with open(file_write_path, 'wt') as out_file:
             complex_words = []
             # id = row['ID']
             sentence = row['sentence']
-            # split_sentence = word_tokenize(sentence)
-            split_sentence = row['sentence'].split()
+            split_sentence = word_tokenize(sentence)
+            # split_sentence = row['sentence'].split()
 
         complex_words.append(row['phrase'])
         print(complex_words)
