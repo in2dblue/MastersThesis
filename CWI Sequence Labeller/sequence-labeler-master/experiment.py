@@ -5,6 +5,8 @@ import random
 import math
 import os
 import gc
+import csv
+import time
 
 try:
     import ConfigParser as configparser
@@ -27,23 +29,29 @@ def read_input_files(file_paths, max_sentence_length=-1):
     for file_path in file_paths.strip().split(","):
         with open(file_path, "r") as f:
             sentence = []
-            for line in f:
-                line = line.strip()
-                if len(line) > 0:
-                    line_parts = line.split()
-                    assert(len(line_parts) >= 2)
-                    assert(len(line_parts) == line_length or line_length == None)
-                    line_length = len(line_parts)
-                    word, label = line_parts
-                    word_length, word_syn, word_hyper, word_hypo, word_syl = word_features(word)
-                    sentence.append([word, word_length, word_syn, word_hyper, word_hypo, word_syl, label])
-                elif len(line) == 0 and len(sentence) > 0:
+            with open('train_features.tsv', 'wt') as out_file:
+                tsv_writer = csv.writer(out_file, delimiter='\t')
+                for line in f:
+                    line = line.strip()
+                    if len(line) > 0:
+                        line_parts = line.split()
+                        assert(len(line_parts) >= 2)
+                        assert(len(line_parts) == line_length or line_length == None)
+                        line_length = len(line_parts)
+                        word, label = line_parts
+                        word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq = word_features(word)
+                        # tsv_writer.writerow(['word', 'word_length', 'word_syn', 'word_hyper', 'word_hypo', 'word_syl', 'level'])
+                        tsv_writer.writerow([word, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
+                        sentence.append([word, word_length, word_syn, word_hyper, word_hypo, word_syl, label])
+                    elif len(line) == 0 and len(sentence) > 0:
+                        if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
+                            sentences.append(sentence)
+                            tsv_writer.writerow('')
+                        sentence = []
+                if len(sentence) > 0:
                     if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
                         sentences.append(sentence)
-                    sentence = []
-            if len(sentence) > 0:
-                if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
-                    sentences.append(sentence)
+        exit()
     return sentences
 
 
@@ -55,14 +63,24 @@ def word_features(word):
     # word_hyper = feature_extractor.hypernyms(word)
     # word_hypo = feature_extractor.hyponyms(word)
     # word_syl = feature_extractor.get_syllables(word)
+    # ogden_bin = feature_extractor.ogdens_basic_english(word)
+    # subimdb_bin = feature_extractor.subimdb_frequent(word)
+    # simplewiki_bin = feature_extractor.simplewiki_frequent(word)
+    start_time = time.time()
+    lang8_freq = feature_extractor.lang8_word_freq(word)
+    # print("--- %s seconds ---" % (time.time() - start_time))
 
     word_length = 0
     word_syn = 0
     word_hyper = 0
     word_hypo = 0
     word_syl = 0
+    ogden_bin = 0
+    subimdb_bin = 0
+    simplewiki_bin = 0
+    # lang8_freq = 0
 
-    return word_length, word_syn, word_hyper, word_hypo, word_syl
+    return word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq
 
 def parse_config(config_section, config_path):
     """
