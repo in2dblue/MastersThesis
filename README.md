@@ -16,7 +16,7 @@ The system output for both *SEQ* and the winning shared task submission *CAMB* i
 ## Requirements
 python (tested with 3.6)
 
-tensorflow (tested with 1.3.0 and 1.4.1)
+tensorflow (tested with 1.3.0)
 
 ## Run with:
 
