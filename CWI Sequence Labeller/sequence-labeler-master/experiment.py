@@ -26,38 +26,39 @@ def read_input_files(file_paths, max_sentence_length=-1):
     """
     sentences = []
     line_length = None
-    i=0
     for file_path in file_paths.strip().split(","):
         with open(file_path, "r") as f:
             sentence = []
-            with open('./modeldata/train_with_features.tsv', 'wt') as out_file:
-                tsv_writer = csv.writer(out_file, delimiter='\t')
-                for line in f:
-                    line = line.strip()
-                    if len(line) > 0:
-                        i += 1
-                        print(i)
-                        print(line)
-                        line_parts = line.split("\t")
-                        assert(len(line_parts) >= 2)
-                        assert(len(line_parts) == line_length or line_length == None)
-                        line_length = len(line_parts)
-                        print(line_length)
-                        # word, label = line_parts
-                        word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, label = line_parts
-                        word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq = word_features(word)
-                        # tsv_writer.writerow(['word', 'word_length', 'word_syn', 'word_hyper', 'word_hypo', 'word_syl', 'level'])
-                        tsv_writer.writerow([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
-                        sentence.append([word, word_length, word_syn, word_hyper, word_hypo, word_syl, label])
-                    elif len(line) == 0 and len(sentence) > 0:
-                        if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
-                            sentences.append(sentence)
-                            tsv_writer.writerow('')
-                        sentence = []
-                if len(sentence) > 0:
+            # with open('./modeldata/train_with_features.tsv', 'wt') as out_file:
+            #     tsv_writer = csv.writer(out_file, delimiter='\t')
+            for line in f:
+                line = line.strip()
+                if len(line) > 0:
+                    line_parts = line.split("\t")
+                    assert(len(line_parts) >= 2)
+                    assert(len(line_parts) == line_length or line_length == None)
+                    line_length = len(line_parts)
+                    # word, label = line_parts
+                    # word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, label = line_parts
+                    # word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq = word_features(word)
+                    # tsv_writer.writerow(['word', 'word_length', 'word_syn', 'word_hyper', 'word_hypo', 'word_syl', 'level'])
+                    # tsv_writer.writerow([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
+                    if file_path == 'modeldata/train_with_features.tsv':
+                        word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label = line_parts
+                        # sentence.append([word, word_length, word_syn, word_hyper, word_hypo, word_syl, label])
+                        sentence.append([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
+                    else:
+                        word, label = line_parts
+                        sentence.append([word, label])
+                elif len(line) == 0 and len(sentence) > 0:
                     if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
                         sentences.append(sentence)
-        exit()
+                        # tsv_writer.writerow('')
+                    sentence = []
+            if len(sentence) > 0:
+                if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
+                    sentences.append(sentence)
+        # exit()
     return sentences
 
 
@@ -75,16 +76,6 @@ def word_features(word):
     # start_time = time.time()
     lang8_freq = feature_extractor.lang8_word_freq(word)
     # print("--- %s seconds ---" % (time.time() - start_time))
-
-    # word_length = 0
-    # word_syn = 0
-    # word_hyper = 0
-    # word_hypo = 0
-    # word_syl = 0
-    # ogden_bin = 0
-    # subimdb_bin = 0
-    # simplewiki_bin = 0
-    # lang8_freq = 0
 
     return word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq
 
