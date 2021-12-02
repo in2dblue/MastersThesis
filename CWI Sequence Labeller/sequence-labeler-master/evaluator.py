@@ -50,7 +50,8 @@ class SequenceLabelingEvaluator(object):
         p = (float(self.main_correct_count) / float(self.main_predicted_count)) if (self.main_predicted_count > 0) else 0.0
         r = (float(self.main_correct_count) / float(self.main_total_count)) if (self.main_total_count > 0) else 0.0
         f = (2.0 * p * r / (p + r)) if (p+r > 0.0) else 0.0
-        f05 = ((1.0 + 0.5*0.5) * p * r / ((0.5*0.5 * p) + r)) if (p+r > 0.0) else 0.0
+        # f05 = ((1.0 + 0.5*0.5) * p * r / ((0.5*0.5 * p) + r)) if (p+r > 0.0) else 0.0
+        f05 = ((1.0 + 0.5*0.5) * p * r / ((0.5*0.5 * r) + p)) if (p+r > 0.0) else 0.0
 
         results = collections.OrderedDict()
         results[name + "_cost_avg"] = self.cost_sum / float(self.token_count)
