@@ -257,7 +257,10 @@ def run_experiment(config_path):
                     labeler.saver.save(labeler.session, temp_model_path, latest_filename=os.path.basename(temp_model_path)+".checkpoint")
                 print("best_epoch: " + str(best_epoch))
 
-                if config["stop_if_no_improvement_for_epochs"] > 0 and (epoch - best_epoch) >= config["stop_if_no_improvement_for_epochs"]:
+                # if config["stop_if_no_improvement_for_epochs"] > 0 and (epoch - best_epoch) >= config["stop_if_no_improvement_for_epochs"]:
+                #     break
+
+                if epoch >= 50:
                     break
 
                 if (epoch - best_epoch) > 3:
