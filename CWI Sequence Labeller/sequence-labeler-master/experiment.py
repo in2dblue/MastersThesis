@@ -45,6 +45,20 @@ def read_input_files(file_paths, max_sentence_length=-1):
                     # tsv_writer.writerow([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
                     if file_path == 'modeldata/train_with_features.tsv':
                         word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label = line_parts
+                        if sen_length is not None and sen_length != '':
+                            sen_length = (float(sen_length)-3)/114
+                        if google_freq is not None and google_freq != '':
+                            google_freq = float(google_freq)/6229.927296
+                        if word_length is not None and word_length != '':
+                            word_length = (float(word_length)-1)/24
+                        if word_syn is not None and word_syn != '':
+                            word_syn = float(word_syn)/72
+                        if word_hyper is not None and word_hyper != '':
+                            word_hyper = float(word_hyper)/3
+                        if word_hypo is not None and word_hypo != '':
+                            word_hypo = float(word_hypo)/402
+                        if word_syl is not None and word_syl != '':
+                            word_syl = float(word_syl)/7
                         # sentence.append([word, word_length, word_syn, word_hyper, word_hypo, word_syl, label])
                         sentence.append([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
                     else:
@@ -274,4 +288,5 @@ def run_experiment(config_path):
 
 if __name__ == "__main__":
     run_experiment(sys.argv[1])
+    # os.system('spd-say "your program has finished"')
 
