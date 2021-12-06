@@ -236,38 +236,42 @@ def run_experiment(config_path):
         best_selector_value = 0.0
         best_epoch = -1
         learningrate = config["learningrate"]
-        for epoch in range(config["epochs"]):
-            print("EPOCH: " + str(epoch))
-            print("current_learningrate: " + str(learningrate))
-            random.shuffle(data_train)
+        with open('train_dev_cost.tsv', 'wt') as out_file:
+            tsv_writer = csv.writer(out_file, delimiter='\t')
+            for epoch in range(config["epochs"]):
+                print("EPOCH: " + str(epoch))
+                print("current_learningrate: " + str(learningrate))
+                random.shuffle(data_train)
 
-            results_train = process_sentences(data_train, labeler, is_training=True, learningrate=learningrate, config=config, name="train")
+                results_train = process_sentences(data_train, labeler, is_training=True, learningrate=learningrate, config=config, name="train")
 
-            if data_dev != None:
-                results_dev = process_sentences(data_dev, labeler, is_training=False, learningrate=0.0, config=config, name="dev")
+                if data_dev != None:
+                    results_dev = process_sentences(data_dev, labeler, is_training=False, learningrate=0.0, config=config, name="dev")
 
-                if math.isnan(results_dev["dev_cost_sum"]) or math.isinf(results_dev["dev_cost_sum"]):
-                    sys.stderr.write("ERROR: Cost is NaN or Inf. Exiting.\n")
-                    break
+                    tsv_writer.writerow([epoch, results_train['train_cost_avg'], results_dev['dev_cost_avg']])
 
-                if (epoch == 0 or (model_selector_type == "high" and results_dev[model_selector] > best_selector_value) 
-                               or (model_selector_type == "low" and results_dev[model_selector] < best_selector_value)):
-                    best_epoch = epoch
-                    best_selector_value = results_dev[model_selector]
-                    labeler.saver.save(labeler.session, temp_model_path, latest_filename=os.path.basename(temp_model_path)+".checkpoint")
-                print("best_epoch: " + str(best_epoch))
+                    if math.isnan(results_dev["dev_cost_sum"]) or math.isinf(results_dev["dev_cost_sum"]):
+                        sys.stderr.write("ERROR: Cost is NaN or Inf. Exiting.\n")
+                        break
 
-                # if config["stop_if_no_improvement_for_epochs"] > 0 and (epoch - best_epoch) >= config["stop_if_no_improvement_for_epochs"]:
-                #     break
+                    if (epoch == 0 or (model_selector_type == "high" and results_dev[model_selector] > best_selector_value)
+                                   or (model_selector_type == "low" and results_dev[model_selector] < best_selector_value)):
+                        best_epoch = epoch
+                        best_selector_value = results_dev[model_selector]
+                        labeler.saver.save(labeler.session, temp_model_path, latest_filename=os.path.basename(temp_model_path)+".checkpoint")
+                    print("best_epoch: " + str(best_epoch))
 
-                if epoch >= 50:
-                    break
+                    # if config["stop_if_no_improvement_for_epochs"] > 0 and (epoch - best_epoch) >= config["stop_if_no_improvement_for_epochs"]:
+                    #     break
 
-                if (epoch - best_epoch) > 3:
-                    learningrate *= config["learningrate_decay"]
+                    if epoch >= 60:
+                        break
 
-            while config["garbage_collection"] == True and gc.collect() > 0:
-                pass
+                    if (epoch - best_epoch) > 3:
+                        learningrate *= config["learningrate_decay"]
+
+                while config["garbage_collection"] == True and gc.collect() > 0:
+                    pass
 
         if data_dev != None and best_epoch >= 0:
             # loading the best model so far
