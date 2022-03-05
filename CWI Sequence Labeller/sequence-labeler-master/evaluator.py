@@ -1,7 +1,8 @@
 import time
 import collections
-import numpy
+import numpy as np
 import conlleval
+from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 
 class SequenceLabelingEvaluator(object):
     def __init__(self, main_label, label2id, conll_eval=False):
@@ -17,6 +18,8 @@ class SequenceLabelingEvaluator(object):
         self.main_correct_count = 0
         self.token_count = 0
         self.start_time = time.time()
+        self.actual = []
+        self.predicted = []
 
         self.id2label = collections.OrderedDict()
         for label in self.label2id:
@@ -43,15 +46,20 @@ class SequenceLabelingEvaluator(object):
                     self.main_correct_count += 1
 
                 self.conll_format.append(token + "\t" + gold_label + "\t" + predicted_label)
+                self.actual.append(gold_label)
+                self.predicted.append(predicted_label)
             self.conll_format.append("")
-
 
     def get_results(self, name):
         p = (float(self.main_correct_count) / float(self.main_predicted_count)) if (self.main_predicted_count > 0) else 0.0
         r = (float(self.main_correct_count) / float(self.main_total_count)) if (self.main_total_count > 0) else 0.0
         f = (2.0 * p * r / (p + r)) if (p+r > 0.0) else 0.0
-        # f05 = ((1.0 + 0.5*0.5) * p * r / ((0.5*0.5 * p) + r)) if (p+r > 0.0) else 0.0
-        f05 = ((1.0 + 0.5*0.5) * p * r / ((0.5*0.5 * r) + p)) if (p+r > 0.0) else 0.0
+        f05 = ((1.0 + 0.5*0.5) * p * r / ((0.5*0.5 * p) + r)) if (p+r > 0.0) else 0.0
+        # f05 = ((1.0 + 0.5*0.5) * p * r / ((0.5*0.5 * r) + p)) if (p+r > 0.0) else 0.0
+        # f1_macro = self.f1_macro(self.actual, self.predicted)
+        p_macro = precision_score(self.actual, self.predicted, average='macro')
+        r_macro = recall_score(self.actual, self.predicted, average='macro')
+        f1_macro = f1_score(self.actual, self.predicted, average='macro')
 
         results = collections.OrderedDict()
         results[name + "_cost_avg"] = self.cost_sum / float(self.token_count)
@@ -62,6 +70,9 @@ class SequenceLabelingEvaluator(object):
         results[name + "_p"] = p
         results[name + "_r"] = r
         results[name + "_f"] = f
+        results[name + "_pMacro"] = p_macro
+        results[name + "_rMacro"] = r_macro
+        results[name + "_f1Macro"] = f1_macro
         results[name + "_f05"] = f05
         results[name + "_accuracy"] = self.correct_sum / float(self.token_count)
         results[name + "_token_count"] = self.token_count

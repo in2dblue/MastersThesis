@@ -44,6 +44,7 @@ def read_input_files(file_paths, max_sentence_length=-1):
                     # tsv_writer.writerow(['word', 'word_length', 'word_syn', 'word_hyper', 'word_hypo', 'word_syl', 'level'])
                     # tsv_writer.writerow([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
                     if file_path == 'modeldata/train_with_features.tsv':
+                    # if file_path == 'News_Train2.tsv':
                         word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label = line_parts
                         if sen_length is not None and sen_length != '':
                             sen_length = (float(sen_length)-3)/114
@@ -261,10 +262,7 @@ def run_experiment(config_path):
                         labeler.saver.save(labeler.session, temp_model_path, latest_filename=os.path.basename(temp_model_path)+".checkpoint")
                     print("best_epoch: " + str(best_epoch))
 
-                    # if config["stop_if_no_improvement_for_epochs"] > 0 and (epoch - best_epoch) >= config["stop_if_no_improvement_for_epochs"]:
-                    #     break
-
-                    if epoch >= 60:
+                    if config["stop_if_no_improvement_for_epochs"] > 0 and (epoch - best_epoch) >= config["stop_if_no_improvement_for_epochs"]:
                         break
 
                     if (epoch - best_epoch) > 3:
