@@ -44,7 +44,6 @@ def read_input_files(file_paths, max_sentence_length=-1):
                     # tsv_writer.writerow(['word', 'word_length', 'word_syn', 'word_hyper', 'word_hypo', 'word_syl', 'level'])
                     # tsv_writer.writerow([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
                     if file_path == 'modeldata/train_with_features.tsv' or file_path == 'modeldata/train_with_features2.tsv':
-                        print(file_path)
                     # if file_path == 'News_Train2.tsv':
                         if file_path == 'modeldata/train_with_features2.tsv':
                             word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, pc1, pc2, label = line_parts
