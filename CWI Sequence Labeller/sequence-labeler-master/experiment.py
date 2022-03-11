@@ -6,7 +6,6 @@ import math
 import os
 import gc
 import csv
-import time
 
 try:
     import ConfigParser as configparser
@@ -29,8 +28,6 @@ def read_input_files(file_paths, max_sentence_length=-1):
     for file_path in file_paths.strip().split(","):
         with open(file_path, "r") as f:
             sentence = []
-            # with open('./modeldata/train_with_features.tsv', 'wt') as out_file:
-            #     tsv_writer = csv.writer(out_file, delimiter='\t')
             for line in f:
                 line = line.strip()
                 if len(line) > 0:
@@ -38,11 +35,6 @@ def read_input_files(file_paths, max_sentence_length=-1):
                     assert(len(line_parts) >= 2)
                     assert(len(line_parts) == line_length or line_length == None)
                     line_length = len(line_parts)
-                    # word, label = line_parts
-                    # word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, label = line_parts
-                    # word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq = word_features(word)
-                    # tsv_writer.writerow(['word', 'word_length', 'word_syn', 'word_hyper', 'word_hypo', 'word_syl', 'level'])
-                    # tsv_writer.writerow([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
                     if file_path == 'modeldata/train_with_features.tsv' or file_path == 'modeldata/train_with_features2.tsv':
                     # if file_path == 'News_Train2.tsv':
                         if file_path == 'modeldata/train_with_features2.tsv':
@@ -63,7 +55,6 @@ def read_input_files(file_paths, max_sentence_length=-1):
                             word_hypo = float(word_hypo)/402
                         if word_syl is not None and word_syl != '':
                             word_syl = float(word_syl)/7
-                        # sentence.append([word, word_length, word_syn, word_hyper, word_hypo, word_syl, label])
                     if file_path == 'modeldata/train_with_features.tsv':
                         sentence.append([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
                     elif file_path == 'modeldata/train_with_features2.tsv':
@@ -74,12 +65,10 @@ def read_input_files(file_paths, max_sentence_length=-1):
                 elif len(line) == 0 and len(sentence) > 0:
                     if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
                         sentences.append(sentence)
-                        # tsv_writer.writerow('')
                     sentence = []
             if len(sentence) > 0:
                 if max_sentence_length <= 0 or len(sentence) <= max_sentence_length:
                     sentences.append(sentence)
-        # exit()
     return sentences
 
 
@@ -94,9 +83,7 @@ def word_features(word):
     ogden_bin = feature_extractor.ogdens_basic_english(word)
     subimdb_bin = feature_extractor.subimdb_frequent(word)
     simplewiki_bin = feature_extractor.simplewiki_frequent(word)
-    # start_time = time.time()
     lang8_freq = feature_extractor.lang8_word_freq(word)
-    # print("--- %s seconds ---" % (time.time() - start_time))
 
     return word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq
 
@@ -299,5 +286,4 @@ def run_experiment(config_path):
 
 if __name__ == "__main__":
     run_experiment(sys.argv[1])
-    # os.system('spd-say "your program has finished"')
 

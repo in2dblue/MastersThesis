@@ -230,27 +230,27 @@ class SequenceLabeler(object):
         processed_tensor = tf.concat([lstm_outputs_fw, lstm_outputs_bw], 2)
         processed_tensor_size = self.config["word_recurrent_size"] * 2
 
-        # OUR CODE TO ADD FEATURES
+        # Introducing features
         # sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length,
         # word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq
-        processed_tensor = tf.concat([processed_tensor, self.sen_length], -1)
-        processed_tensor = tf.concat([processed_tensor, self.sen_complex], -1)
-        processed_tensor = tf.concat([processed_tensor, self.min_sim], -1)
-        processed_tensor = tf.concat([processed_tensor, self.max_sim], -1)
-        processed_tensor = tf.concat([processed_tensor, self.mean_sim], -1)
-        # processed_tensor = tf.concat([processed_tensor, self.pos], -1)
-        processed_tensor = tf.concat([processed_tensor, self.google_freq], -1)
-        processed_tensor = tf.concat([processed_tensor, self.length_of_the_word], -1)
-        processed_tensor = tf.concat([processed_tensor, self.word_syn], -1)
-        processed_tensor = tf.concat([processed_tensor, self.word_hyper], -1)
-        processed_tensor = tf.concat([processed_tensor, self.word_hypo], -1)
-        processed_tensor = tf.concat([processed_tensor, self.word_syl], -1)
-        processed_tensor = tf.concat([processed_tensor, self.ogden_bin], -1)
-        processed_tensor = tf.concat([processed_tensor, self.subimdb_bin], -1)
-        processed_tensor = tf.concat([processed_tensor, self.simplewiki_bin], -1)
-        processed_tensor = tf.concat([processed_tensor, self.lang8_freq], -1)
-        processed_tensor = tf.concat([processed_tensor, self.pc1], -1)
-        processed_tensor = tf.concat([processed_tensor, self.pc2], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.sen_length], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.sen_complex], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.min_sim], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.max_sim], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.mean_sim], -1)
+        # # processed_tensor = tf.concat([processed_tensor, self.pos], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.google_freq], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.length_of_the_word], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.word_syn], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.word_hyper], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.word_hypo], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.word_syl], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.ogden_bin], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.subimdb_bin], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.simplewiki_bin], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.lang8_freq], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.pc1], -1)
+        # processed_tensor = tf.concat([processed_tensor, self.pc2], -1)
 
         if self.config["hidden_layer_size"] > 0:
             processed_tensor = tf.layers.dense(processed_tensor, self.config["hidden_layer_size"], activation=tf.tanh, kernel_initializer=self.initializer)
@@ -408,7 +408,7 @@ class SequenceLabeler(object):
                     max_sim[i][j][0] = float(batch[i][j][4])
                     mean_sim[i][j][0] = float(batch[i][j][5])
                     # pos[i][j][0] = float(batch[i][j][6])
-                    try: # some frequencies are blank in file
+                    try:  # some frequencies are Nan in file
                         google_freq[i][j][0] = float(batch[i][j][7])
                     except:
                         google_freq[i][j][0] = 0.0
