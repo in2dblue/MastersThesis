@@ -64,10 +64,10 @@ class SequenceLabelingEvaluator(object):
                             if not self.predicted[example_id]:
                                 example_id += 1
                         elif self.predicted[example_id]:
-                            example_id += 1
                             # output_line = line.split('\t')[0] + "\t" + predictions[example_id].pop(0) + "\n"
                             output_line = line.replace("\n", "\t") + self.predicted[example_id] + "\n"
                             writer.write(output_line)
+                            example_id += 1
                         else:
                             print("Maximum sequence length exceeded: No prediction for '%s'.", line.split()[0])
 
