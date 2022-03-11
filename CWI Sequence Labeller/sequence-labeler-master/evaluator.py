@@ -56,7 +56,7 @@ class SequenceLabelingEvaluator(object):
         if name not in ['train', 'dev']:
             output_test_predictions_file = "{}_predictions.tsv".format(name)
             with open(output_test_predictions_file, "w") as writer:
-                with open("{}.tsv".format(name), "r") as f:
+                with open("modeldata/{}.tsv".format(name), "r") as f:
                     example_id = 0
                     for line in f:
                         if line.startswith("-DOCSTART-") or line.strip() == "" or line == "\n":
