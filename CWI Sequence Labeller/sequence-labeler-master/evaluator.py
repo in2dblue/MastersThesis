@@ -53,21 +53,22 @@ class SequenceLabelingEvaluator(object):
     def get_results(self, name):
 
         # Save predictions
-        output_test_predictions_file = "{}_predictions.tsv".format(name)
-        with open(output_test_predictions_file, "w") as writer:
-            with open("{}.tsv".format(name), "r") as f:
-                example_id = 0
-                for line in f:
-                    if line.startswith("-DOCSTART-") or line.strip() == "" or line == "\n":
-                        writer.write(line)
-                        if not self.predicted[example_id]:
-                            example_id += 1
-                    elif self.predicted[example_id]:
-                        # output_line = line.split('\t')[0] + "\t" + predictions[example_id].pop(0) + "\n"
-                        output_line = line.replace("\n", "\t") + self.predicted[example_id].pop(0) + "\n"
-                        writer.write(output_line)
-                    else:
-                        print("Maximum sequence length exceeded: No prediction for '%s'.", line.split()[0])
+        if name not in ['train', 'dev']:
+            output_test_predictions_file = "{}_predictions.tsv".format(name)
+            with open(output_test_predictions_file, "w") as writer:
+                with open("{}.tsv".format(name), "r") as f:
+                    example_id = 0
+                    for line in f:
+                        if line.startswith("-DOCSTART-") or line.strip() == "" or line == "\n":
+                            writer.write(line)
+                            if not self.predicted[example_id]:
+                                example_id += 1
+                        elif self.predicted[example_id]:
+                            # output_line = line.split('\t')[0] + "\t" + predictions[example_id].pop(0) + "\n"
+                            output_line = line.replace("\n", "\t") + self.predicted[example_id].pop(0) + "\n"
+                            writer.write(output_line)
+                        else:
+                            print("Maximum sequence length exceeded: No prediction for '%s'.", line.split()[0])
 
         p = (float(self.main_correct_count) / float(self.main_predicted_count)) if (self.main_predicted_count > 0) else 0.0
         r = (float(self.main_correct_count) / float(self.main_total_count)) if (self.main_total_count > 0) else 0.0

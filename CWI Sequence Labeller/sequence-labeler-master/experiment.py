@@ -35,12 +35,8 @@ def read_input_files(file_paths, max_sentence_length=-1):
                     assert(len(line_parts) >= 2)
                     assert(len(line_parts) == line_length or line_length == None)
                     line_length = len(line_parts)
-                    if file_path == 'modeldata/train_with_features.tsv' or file_path == 'modeldata/train_with_features2.tsv':
-                    # if file_path == 'News_Train2.tsv':
-                        if file_path == 'modeldata/train_with_features2.tsv':
-                            word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, pc1, pc2, label = line_parts
-                        else:
-                            word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label = line_parts
+                    if file_path == 'modeldata/train_with_features.tsv':
+                        word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label = line_parts
                         if sen_length is not None and sen_length != '':
                             sen_length = (float(sen_length)-3)/114
                         if google_freq is not None and google_freq != '':
@@ -55,10 +51,7 @@ def read_input_files(file_paths, max_sentence_length=-1):
                             word_hypo = float(word_hypo)/402
                         if word_syl is not None and word_syl != '':
                             word_syl = float(word_syl)/7
-                    if file_path == 'modeldata/train_with_features.tsv':
                         sentence.append([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, label])
-                    elif file_path == 'modeldata/train_with_features2.tsv':
-                        sentence.append([word, sen_length, sen_complex, min_sim, max_sim, mean_sim, pos, google_freq, word_length, word_syn, word_hyper, word_hypo, word_syl, ogden_bin, subimdb_bin, simplewiki_bin, lang8_freq, pc1, pc2, label])
                     else:
                         word, label = line_parts
                         sentence.append([word, label])

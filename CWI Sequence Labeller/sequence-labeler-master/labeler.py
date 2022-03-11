@@ -116,8 +116,6 @@ class SequenceLabeler(object):
         self.subimdb_bin = tf.placeholder(tf.float32, [None, None, 1], name="subimdb_bin")
         self.simplewiki_bin = tf.placeholder(tf.float32, [None, None, 1], name="simplewiki_bin")
         self.lang8_freq = tf.placeholder(tf.float32, [None, None, 1], name="lang8_freq")
-        self.pc1 = tf.placeholder(tf.float32, [None, None, 1], name="pc1")
-        self.pc2 = tf.placeholder(tf.float32, [None, None, 1], name="pc2")
 
         self.loss = 0.0
         input_tensor = None
@@ -249,8 +247,6 @@ class SequenceLabeler(object):
         # processed_tensor = tf.concat([processed_tensor, self.subimdb_bin], -1)
         # processed_tensor = tf.concat([processed_tensor, self.simplewiki_bin], -1)
         # processed_tensor = tf.concat([processed_tensor, self.lang8_freq], -1)
-        # processed_tensor = tf.concat([processed_tensor, self.pc1], -1)
-        # processed_tensor = tf.concat([processed_tensor, self.pc2], -1)
 
         if self.config["hidden_layer_size"] > 0:
             processed_tensor = tf.layers.dense(processed_tensor, self.config["hidden_layer_size"], activation=tf.tanh, kernel_initializer=self.initializer)
@@ -391,8 +387,6 @@ class SequenceLabeler(object):
         subimdb_bin = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
         simplewiki_bin = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
         lang8_freq = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
-        pc1 = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
-        pc2 = numpy.zeros((len(batch), max_sentence_length, 1), dtype=numpy.float32)
 
         singletons = self.singletons if is_training == True else None
         singletons_prob = self.config["singletons_prob"] if is_training == True else 0.0
@@ -423,8 +417,6 @@ class SequenceLabeler(object):
                     subimdb_bin[i][j][0] = float(batch[i][j][14])
                     simplewiki_bin[i][j][0] = float(batch[i][j][15])
                     lang8_freq[i][j][0] = float(batch[i][j][16])
-                    pc1[i][j][0] = float(batch[i][j][17])
-                    pc2[i][j][0] = float(batch[i][j][18])
 
                 for k in range(min(len(batch[i][j][0]), max_word_length)):
                     char_ids[i][j][k] = self.translate2id(batch[i][j][0][k], self.char2id, self.CUNK)
@@ -434,7 +426,7 @@ class SequenceLabeler(object):
                             self.sen_length: sen_length, self.sen_complex: sen_complex, self.min_sim: min_sim, self.max_sim: max_sim,
                             self.mean_sim: mean_sim, self.google_freq: google_freq, self.length_of_the_word: length_of_the_word, self.word_syn: word_syn,
                             self.word_hyper: word_hyper, self.word_hypo: word_hypo, self.word_syl: word_syl, self.ogden_bin: ogden_bin,
-                            self.subimdb_bin: subimdb_bin, self.simplewiki_bin: simplewiki_bin, self.lang8_freq: lang8_freq, self.pc1: pc1, self.pc2: pc2}
+                            self.subimdb_bin: subimdb_bin, self.simplewiki_bin: simplewiki_bin, self.lang8_freq: lang8_freq}
         return input_dictionary
 
 
