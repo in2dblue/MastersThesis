@@ -280,7 +280,9 @@ def run_experiment(config_path):
         i = 0
         for path_test in config["path_test"].strip().split(":"):
             data_test = read_input_files(path_test)
-            results_test = process_sentences(data_test, labeler, is_training=False, learningrate=0.0, config=config, name="test"+str(i))
+            testset = path_test.split('/')[1]
+            testset = testset.split('.')[0]
+            results_test = process_sentences(data_test, labeler, is_training=False, learningrate=0.0, config=config, name=testset)
             i += 1
 
 
